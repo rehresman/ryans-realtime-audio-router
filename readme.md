@@ -4,8 +4,9 @@ A minimal C++ real-time audio pipeline demonstrating lock-free audio data transf
 
 This project is meant to model a realistic real-time audio system architecture similar to telephony, Bluetooth audio, or media playback pipelines.
 
-![Router Output](./Low%20Frequency%20Sine%20Sweep%20Integrity%20Over%2010s.png)
-
+![Router Output](./plots/Constant%20Frequency%20Sine%20Wave%20Integrity%20Over%2010s.png)
+![Router Output](./plots/Low%20Frequency%20Sine%20Sweep%20Integrity%20Over%2010s.png)
+[Listen (careful, it's loud)](./audio/test.wav)
 ---
 
 ## Deliverable 1: Lock-Free Audio Pipleline
@@ -22,7 +23,7 @@ No external audio frameworks were used in this deliverable.
 
 ## Architecture
 > **Producer Thread**
-> * Generates audio blocks at audio rate via 5-octave sine wave sweep.
+> * Generates audio blocks using FM synthesis
 > * Runs simple DSP (gain + low-pass)
 > * Pushes blocks into lock-free ring buffer
 
@@ -78,7 +79,7 @@ Filter state is maintained across callbacks to avoid discontinuities due to IIR 
 ```bash
 cmake -S . -B build
 cmake --build build -j
-./build/ryans-audio-router
+./build/ryans-realtime-audio-router
 ```
 
 ## Python Plotting

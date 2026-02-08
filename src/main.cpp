@@ -40,10 +40,10 @@ int main() {
         auto next = clock::now();
 
         double phase = 0.0;
-        const double freq = 1.0;
+        const double freq = 55.0;
         double fmPhase = 0.0;
-        const double fmFreq = 0.05;
-        const double fmOctaves = 5;
+        const double fmFreq = 0.15;
+        const double fmAmt = 4.0;
         const double phaseInc = 2.0 * M_PI * freq / sampleRate;
         const double fmPhaseInc = 2.0 * M_PI * fmFreq / sampleRate;
         double fm = 0;
@@ -56,10 +56,10 @@ int main() {
             next += std::chrono::duration_cast<clock::duration>(
                 std::chrono::duration<double, std::milli>(callbackMs));
             for (size_t i = 0; i < blockSize; ++i){
-                fm = (1 - std::cos(fmPhase)) * fmOctaves;
+                fm = (1 - std::cos(fmPhase)) * pow(2,fmAmt);
                 in[i] = static_cast<float>(std::sin(phase));
                 fmPhase += fmPhaseInc;
-                phase = phase + (fm*phaseInc);
+                phase = phase + (phaseInc * fm);
                 if (phase > 2.0 * M_PI){
                     phase -= 2.0 * M_PI;
                 }
@@ -146,7 +146,7 @@ int main() {
     audioThread.join();
     workerThread.join();
 
-    if (WavWriter16Mono::write("out.wav", recorded, static_cast<uint32_t>(sampleRate))) {
+    if (WavWriter16Mono::write("audio/out.wav", recorded, static_cast<uint32_t>(sampleRate))) {
         std::cout << "Wrote out.wav (" << recorded.size() << " samples)\n";
     } else {
         std::cout << "Failed to write out.wav\n";

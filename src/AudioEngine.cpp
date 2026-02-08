@@ -10,12 +10,12 @@ void AudioEngine::setGain(float g){
 
 void AudioEngine::process(const float* input, float* output, size_t numFrames, size_t sampleRate) {
 
-    size_t Fc = 8700; // phone audio
+    size_t Fc = 12000;
     float filterCoeff = std::exp(-2.0 * M_PI * Fc / sampleRate);
     std::array<float, 2> fCoefs {1-filterCoeff, filterCoeff};
 
     amplify(input, output, numFrames);
-    //onePole(output, output, numFrames, fCoefs);
+    onePole(output, output, numFrames, fCoefs);
     
 }
 
