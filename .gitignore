@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+.vscode/
