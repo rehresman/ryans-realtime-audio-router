@@ -45,12 +45,12 @@ No external audio frameworks were used in this deliverable.
 
 ## Why SPSC + Lock Free
 
-- Performance is key in real-time audio
+- Worst-case timing is key in real-time audio
 - Real-time audio threads cannot block or wait on locks
-- One read thread and one write thread simplifies design
-- Multiple producers or consumers cause locking, increasing worst-case timing scenarios
-- Lock-free patterns eliminate cache-invalidation issues
-- Deterministic behavior is essential for audio callbacks
+- Locks can cause priority inversion
+- One read thread and one write thread simplifies correctness
+- SPSC can minimize contention and false sharing (if done correctly)
+- Deterministic, glitch-free behavior is essential regarless of load conditions
 
 ## Failure Modes
 
