@@ -18,11 +18,11 @@ struct Stats {
 };
 
 int main() {
-    constexpr size_t sampleRate = 48000;
+    constexpr int sampleRate = 48000;
     constexpr size_t blockSize = 128;
     constexpr double callbackMs = 1000.0 * blockSize / sampleRate;
     constexpr double latencyMs = 15.0;
-    constexpr size_t recTime = 10;  // recording time in seconds
+    constexpr double recTime = 10.0;  // recording time in seconds
 
     struct Block {std::array<float, blockSize> x;};
 
@@ -51,11 +51,12 @@ int main() {
         float in[blockSize];
         float out[blockSize];
 
+        const int blockN = static_cast<int>(blockSize);
         while (running.load(std::memory_order_relaxed)) {
             //create some test audio
             next += std::chrono::duration_cast<clock::duration>(
                 std::chrono::duration<double, std::milli>(callbackMs));
-            for (size_t i = 0; i < blockSize; ++i){
+            for (size_t i = 0; i < blockN; ++i){
                 fm = (1 - std::cos(fmPhase)) * pow(2,fmAmt);
                 in[i] = static_cast<float>(std::sin(phase));
                 fmPhase += fmPhaseInc;
@@ -71,7 +72,7 @@ int main() {
             engine.process(in, out, blockSize, sampleRate);
 
             Block b{};
-            for (size_t i = 0; i < blockSize; ++i){
+            for (size_t i = 0; i < blockN; ++i){
                 b.x[i] = out[i];
             }
 
@@ -94,6 +95,7 @@ int main() {
 
         auto next = clock::now();
         Block b{};
+        const int blockN = static_cast<int>(blockSize);
 
         // define latency
 
@@ -114,7 +116,7 @@ int main() {
                 stats.consumed.fetch_add(blockSize, std::memory_order_relaxed);
 
                 //append to recording
-                for (size_t i = 0; i< blockSize; ++i){
+                for (size_t i = 0; i< blockN; ++i){
                     recorded.push_back(b.x[i]);
                 }
             }

@@ -8,13 +8,15 @@ class AudioEngine {
 
         void setGain(float g);
 
-        void process(const float* input, float* output, size_t numFrames, size_t sampleRate);
+        void process(const float* input, float* output, size_t numFrames, int sampleRate);
 
     private:
         
-        void amplify(const float* input, float* output, size_t numFrames);
+        void amplify(const float* input, float* output, int numFrames);
 
-        void onePole(const float* input, float* output, size_t numFrames, const std::array<float,2>& coefficients);
+        void onePole(const float* input, float* output, int numFrames, const std::array<float,2>& coefficients);
+
+        void saturate(const float* input, float* output, int numFrames);
         
         float gain_;
 
