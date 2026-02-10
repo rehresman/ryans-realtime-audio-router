@@ -17,7 +17,7 @@ void AudioEngine::process(const float* input, float* output, size_t numFrames, i
 
     amplify(input, output, blockN);
     onePole(output, output, blockN, fCoefs);
-    saturate(output, output, blockN);
+    //saturate(output, output, blockN);
     
 }
 

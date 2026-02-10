@@ -5,6 +5,8 @@
 #include <iostream>
 #include <thread>
 #include <pthread.h>
+#include <random>
+#include <cassert>
 
 #include "AudioEngine.h"
 #include "SpscRingBuffer.h"
@@ -23,6 +25,9 @@ int main() {
     constexpr double callbackMs = 1000.0 * blockSize / sampleRate;
     constexpr double latencyMs = 15.0;
     constexpr double recTime = 10.0;  // recording time in seconds
+    constexpr bool simulateOverflow = false;
+    constexpr bool simulateUnderrun = true;
+    constexpr float errFactor = 2.5; // must be less than callbackMs 
 
     struct Block {std::array<float, blockSize> x;};
 
@@ -32,6 +37,12 @@ int main() {
     std::atomic<bool> running{true};
     std::vector<float> recorded;
     recorded.reserve(sampleRate*recTime);
+    // rng for overflow/underrun simulation
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(1,10);
+
+    assert(errFactor < callbackMs && "errFactor must be less than callbackMs");
 
     // audio callback sim
     std::thread audioThread([&](){
@@ -54,8 +65,21 @@ int main() {
         const int blockN = static_cast<int>(blockSize);
         while (running.load(std::memory_order_relaxed)) {
             //create some test audio
+            if (simulateOverflow && simulateUnderrun){
+                next += std::chrono::duration_cast<clock::duration>(
+                    std::chrono::duration<double, 
+                    std::milli>(callbackMs-(errFactor/distrib(gen)) + (errFactor/distrib(gen))));
+            } else if (simulateOverflow){
+                next += std::chrono::duration_cast<clock::duration>(
+                    std::chrono::duration<double, std::milli>(callbackMs-errFactor/distrib(gen)));
+            } else if (simulateUnderrun){
+                next += std::chrono::duration_cast<clock::duration>(
+                    std::chrono::duration<double, std::milli>(callbackMs+errFactor/distrib(gen)));
+            }
+            else {
             next += std::chrono::duration_cast<clock::duration>(
                 std::chrono::duration<double, std::milli>(callbackMs));
+            }
             for (size_t i = 0; i < blockN; ++i){
                 fm = (1 - std::cos(fmPhase)) * pow(2,fmAmt);
                 in[i] = static_cast<float>(std::sin(phase));

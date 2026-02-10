@@ -55,6 +55,7 @@ No external audio frameworks were used in this deliverable.
 ## Failure Modes
 
 - **Overflow**: Producer writes faster than consumer reads data, leading to audio data dropped.
+![Overflow Simulation](./plots/Overflow%20Simulation%20(Sine%20Wave).png)
 - **Underrun**: Consumer reads faster than producer writes data, leading to silence.
 
 Both are instumented and observable.
