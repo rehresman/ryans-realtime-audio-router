@@ -9,7 +9,7 @@ void AudioEngine::setGain(float g){
 }
 
 void AudioEngine::process(const float* input, float* output, size_t numFrames, int sampleRate) {
-
+    // TODO: cleanup
     const int blockN = static_cast<int>(numFrames);
     const float Fc = 12000.0;
     const float filterCoeff = std::exp(-2.0 * M_PI * Fc / sampleRate);

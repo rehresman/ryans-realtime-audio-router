@@ -64,7 +64,8 @@ Both are instumented and observable.
 
 Current DSP chain:
 - Gain
-- One-pole low-pass filter (commented out)
+- One-pole low-pass filter
+- Analog-modeling saturation (commented out)
 
 Filter state is maintained across callbacks to avoid discontinuities due to IIR design.
 

@@ -26,7 +26,7 @@ int main() {
     constexpr double latencyMs = 15.0;
     constexpr double recTime = 10.0;  // recording time in seconds
     constexpr bool simulateOverflow = false;
-    constexpr bool simulateUnderrun = true;
+    constexpr bool simulateUnderrun = false;
     constexpr float errFactor = 2.5; // must be less than callbackMs 
 
     struct Block {std::array<float, blockSize> x;};
@@ -37,6 +37,7 @@ int main() {
     std::atomic<bool> running{true};
     std::vector<float> recorded;
     recorded.reserve(sampleRate*recTime);
+
     // rng for overflow/underrun simulation
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -64,7 +65,7 @@ int main() {
 
         const int blockN = static_cast<int>(blockSize);
         while (running.load(std::memory_order_relaxed)) {
-            //create some test audio
+            // generate timing
             if (simulateOverflow && simulateUnderrun){
                 next += std::chrono::duration_cast<clock::duration>(
                     std::chrono::duration<double, 
@@ -80,7 +81,9 @@ int main() {
             next += std::chrono::duration_cast<clock::duration>(
                 std::chrono::duration<double, std::milli>(callbackMs));
             }
-            for (size_t i = 0; i < blockN; ++i){
+
+            //create some test audio
+            for (int i = 0; i < blockN; ++i){
                 fm = (1 - std::cos(fmPhase)) * pow(2,fmAmt);
                 in[i] = static_cast<float>(std::sin(phase));
                 fmPhase += fmPhaseInc;
@@ -96,7 +99,7 @@ int main() {
             engine.process(in, out, blockSize, sampleRate);
 
             Block b{};
-            for (size_t i = 0; i < blockN; ++i){
+            for (int i = 0; i < blockN; ++i){
                 b.x[i] = out[i];
             }
 
@@ -140,7 +143,7 @@ int main() {
                 stats.consumed.fetch_add(blockSize, std::memory_order_relaxed);
 
                 //append to recording
-                for (size_t i = 0; i< blockN; ++i){
+                for (int i = 0; i< blockN; ++i){
                     recorded.push_back(b.x[i]);
                 }
             }
