@@ -114,7 +114,7 @@ int main() {
         }
     });
 
-    // worker thread (consumer)
+    // worker thread
     std::thread workerThread([&](){
         pthread_setname_np("worker-thread");
         using clock = std::chrono::steady_clock;
@@ -124,9 +124,7 @@ int main() {
         Block b{};
         const int blockN = static_cast<int>(blockSize);
 
-        // define latency
-
-
+        // initial latency
         next += std::chrono::duration_cast<clock::duration>(
             std::chrono::duration<double, std::milli>(latencyMs));
         std::this_thread::sleep_until(next);
