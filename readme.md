@@ -9,19 +9,20 @@ This project is meant to model a realistic real-time audio system architecture s
 [Listen (careful, it's loud)](./audio/test.wav)
 ---
 
-## Deliverable 1: Lock-Free Audio Pipleline
+## Lock-Free Audio Pipleline
 
 ### Overview
 
 - Simulated real-time audio producer thread
 - Lock-free single producer, single consumer (SPSC) ring buffer
 - Worker thread consumes audio blocks and outputs them to a .wav file for analysis
-- Simple DSP chain (gain + simple low-pass filter)
+- Simple DSP chain (gain + simple low-pass filter, optional saturation)
 - Real-time safe logging of buffer overflow, underrun and more.
+- Testable architecture with step API returning diagnostics
 
 No external audio frameworks were used in this deliverable.
 
-## Architecture
+## Realtime Architecture
 > **Producer Thread**
 > * Generates audio blocks using FM synthesis
 > * Runs simple DSP (gain + low-pass)
@@ -41,6 +42,37 @@ No external audio frameworks were used in this deliverable.
 > * Simulates downstream audio consumer, storing audio blocks
 > * Tracks overflows/underruns
 
+## OO Architecture
+
+![Class Model](./plots/Class%20Model.png)
+
+> **SimDriver**
+> * Orchestrates integration testing of RealtimeSim
+> * Launches audio thread, worker thread, and main thread
+> * Simulates timing and jitter
+> * Outputs diagnostics
+> * Writes audio to a .wav file for analysis
+
+> **RealtimeSim**
+> * Step API: reads/writes one block of audio, returns diagnostics per-step for debug
+> * Realtime safe, lock-free, atomic reading/writing of statistics
+> * Synthesizes audio via FM
+> * Calls AudioEngine for DSP
+> * Pops consumed audio for downstream processing
+
+> **AudioEngine**
+> * Minimal DSP engine
+> * Gain, filtering, saturation
+> * Nothing crazy going on here
+
+> **WavWriter**
+> * This is all boilerplate.  It writes the .wav file
+
+> **SpscRingBuffer**
+> * Fixed-size, configurable
+> * Atomic read/write indices with explicit memory alignment
+> * Lock-free, allocation free
+
 ---
 
 ## Why SPSC + Lock Free
@@ -57,6 +89,7 @@ No external audio frameworks were used in this deliverable.
 - **Overflow**: Producer writes faster than consumer reads data, leading to audio data dropped.
 ![Overflow Simulation](./plots/Overflow%20Simulation%20(Sine%20Wave).png)
 - **Underrun**: Consumer reads faster than producer writes data, leading to silence.
+![Underrun Simulation](./plots/Underrun%20Simulation%20(Sine%20Wave).png)
 
 Both are instumented and observable.
 

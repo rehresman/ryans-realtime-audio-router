@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <array>
+#include <span>
 
 class AudioEngine {
     public:
@@ -8,15 +9,15 @@ class AudioEngine {
 
         void setGain(float g);
 
-        void process(const float* input, float* output, size_t numFrames, int sampleRate);
+        void process(std::span<const float> input, std::span<float> output, int sampleRate);
 
     private:
         
-        void amplify(const float* input, float* output, int numFrames);
+        void amplify(std::span<const float> input,  std::span<float> output);
 
-        void onePole(const float* input, float* output, int numFrames, const std::array<float,2>& coefficients);
+        void onePole(std::span<const float> input,  std::span<float> output, const std::array<float,2>& coefficients);
 
-        void saturate(const float* input, float* output, int numFrames);
+        void saturate(std::span<const float> input,  std::span<float> output);
         
         float gain_;
 
