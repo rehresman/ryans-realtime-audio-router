@@ -114,7 +114,7 @@ Filter state is maintained across callbacks to avoid discontinuities due to IIR 
 ```bash
 cmake -S . -B build
 cmake --build build -j
-./build/ryans-realtime-audio-router
+./build/simulation
 ```
 
 ## Python Plotting
