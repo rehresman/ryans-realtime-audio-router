@@ -16,6 +16,8 @@ class RealtimeSim {
         static constexpr size_t kBlockSize = BlockSize;
 
         struct SimStepResult {
+            uint64_t id;
+
             bool pushed = false;
             bool popped = false;
             bool overrun = false;
@@ -80,6 +82,7 @@ class RealtimeSim {
             }
 
             r.bufferFill = rb_.size_approx();
+            r.id = resultsCount_.fetch_add(1, std::memory_order_relaxed);
             return r;
         };
 
@@ -97,6 +100,7 @@ class RealtimeSim {
                 r.popped = true;
                 r.consumedFrames = BlockSize;
             }
+            r.id = resultsCount_.fetch_add(1, std::memory_order_relaxed);
             return r;
         };
         
@@ -112,6 +116,9 @@ class RealtimeSim {
         // core machinery
         SpscRingBuffer<AudioBlock, RingCapacityBlocks> rb_;
         AudioEngine engine_;
+
+        // result ID management
+        std::atomic<u_int64_t> resultsCount_{0};
 
         // sound generation
         const double freq_ = 55.0;
