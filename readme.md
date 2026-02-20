@@ -104,10 +104,10 @@ Filter state is maintained across callbacks to avoid discontinuities due to IIR 
 
 ## Debugging
 
-- Built and debugged with LLDB
+- Step API designed specifically for easy debugging
 - Multiple threads named for easy inspection
-- Verified atomic synchronization
-- Confirmed real-time-safe behavior (no allocation, no locks)
+- Atomic tracking of diagnostics
+- Every block of audio, overrun, and underrun easily tracked
 
 ## Build
 
