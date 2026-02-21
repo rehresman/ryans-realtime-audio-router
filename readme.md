@@ -108,6 +108,8 @@ Filter state is maintained across callbacks to avoid discontinuities due to IIR 
 - Multiple threads named for easy inspection
 - Atomic tracking of diagnostics
 - Every block of audio, overrun, and underrun easily tracked
+- Unit tests for primary classes RealtimeSim, AudioEngine, and SpscRingBuffer
+- SimDriver class functions as an integration test environment
 
 ## Build
 
